@@ -112,7 +112,11 @@ const getMe = async (req, res) => {
 };
 
 const logoutUser = (req, res) => {
-  res.clearCookie("userToken");
+  res.clearCookie("userToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+  });
   res.status(200).json({ success: true, message: "Logged out" });
 };
 

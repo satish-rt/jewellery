@@ -22,14 +22,20 @@ cloudinary.config({
 
 const app = express();
 
+// Trust proxy — required for Render (secure cookies behind reverse proxy)
+app.set('trust proxy', 1);
+
 // Connect to DB if not in test environment
 if (process.env.NODE_ENV !== 'test') {
   connectDB();
 }
 
+// Remove trailing slash from CLIENT_URL to avoid CORS mismatch
+const clientUrl = (process.env.CLIENT_URL || '').replace(/\/+$/, '');
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: clientUrl,
     credentials: true,
   })
 );
