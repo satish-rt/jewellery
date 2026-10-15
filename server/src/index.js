@@ -47,12 +47,21 @@ if (process.env.NODE_ENV !== 'test') {
   connectDB().then(() => seedAdminOnStartup());
 }
 
-// Remove trailing slash from CLIENT_URL to avoid CORS mismatch
+// CORS — allow CLIENT_URL and all Vercel preview URLs
 const clientUrl = (process.env.CLIENT_URL || '').replace(/\/+$/, '');
-
 app.use(
   cors({
-    origin: clientUrl,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      // Allow exact match with CLIENT_URL
+      if (origin === clientUrl) return callback(null, true);
+      // Allow any Vercel preview/deployment URL for this project
+      if (origin.endsWith('.vercel.app')) return callback(null, true);
+      // Allow localhost for development
+      if (origin.includes('localhost')) return callback(null, true);
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   })
 );
@@ -63,7 +72,7 @@ app.use(mongoSanitize());
 
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 200,
   message: { success: false, message: 'Too many requests from this IP, please try again after 15 minutes' },
 });
 app.use('/api', globalLimiter);
