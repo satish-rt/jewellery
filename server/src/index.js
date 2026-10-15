@@ -22,46 +22,14 @@ cloudinary.config({
 
 const app = express();
 
-// Trust proxy — required for Render (secure cookies behind reverse proxy)
-app.set('trust proxy', 1);
-
-// Auto-seed admin on startup
-const seedAdminOnStartup = async () => {
-  try {
-    const Admin = require('./models/Admin');
-    const adminEmail = process.env.ADMIN_EMAIL;
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    if (!adminEmail || !adminPassword) return;
-    const existing = await Admin.findOne({ email: adminEmail });
-    if (!existing) {
-      await new Admin({ email: adminEmail, hashedPassword: adminPassword }).save();
-      console.log(`Admin seeded: ${adminEmail}`);
-    }
-  } catch (err) {
-    console.error('Admin seed error:', err.message);
-  }
-};
-
 // Connect to DB if not in test environment
 if (process.env.NODE_ENV !== 'test') {
-  connectDB().then(() => seedAdminOnStartup());
+  connectDB();
 }
 
-// CORS — allow CLIENT_URL and all Vercel preview URLs
-const clientUrl = (process.env.CLIENT_URL || '').replace(/\/+$/, '');
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (mobile apps, curl, etc.)
-      if (!origin) return callback(null, true);
-      // Allow exact match with CLIENT_URL
-      if (origin === clientUrl) return callback(null, true);
-      // Allow any Vercel preview/deployment URL for this project
-      if (origin.endsWith('.vercel.app')) return callback(null, true);
-      // Allow localhost for development
-      if (origin.includes('localhost')) return callback(null, true);
-      callback(new Error('Not allowed by CORS'));
-    },
+    origin: process.env.CLIENT_URL,
     credentials: true,
   })
 );
@@ -72,7 +40,7 @@ app.use(mongoSanitize());
 
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 100,
   message: { success: false, message: 'Too many requests from this IP, please try again after 15 minutes' },
 });
 app.use('/api', globalLimiter);
