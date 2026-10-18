@@ -22,9 +22,29 @@ cloudinary.config({
 
 const app = express();
 
+// Trust reverse proxy (Render, Heroku, etc.)
+app.set('trust proxy', 1);
+
+// Auto-seed admin on startup
+const seedAdminOnStartup = async () => {
+  try {
+    const Admin = require('./models/Admin');
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminEmail || !adminPassword) return;
+    const existing = await Admin.findOne({ email: adminEmail });
+    if (!existing) {
+      await new Admin({ email: adminEmail, hashedPassword: adminPassword }).save();
+      console.log(`Admin auto-seeded: ${adminEmail}`);
+    }
+  } catch (err) {
+    console.error('Admin auto-seed error:', err.message);
+  }
+};
+
 // Connect to DB if not in test environment
 if (process.env.NODE_ENV !== 'test') {
-  connectDB();
+  connectDB().then(() => seedAdminOnStartup());
 }
 
 const corsOptions = {
@@ -57,7 +77,8 @@ app.use(mongoSanitize());
 
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 200,
+  validate: { xForwardedForHeader: false, trustProxy: false },
   message: { success: false, message: 'Too many requests from this IP, please try again after 15 minutes' },
 });
 app.use('/api', globalLimiter);
