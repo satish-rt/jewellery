@@ -63,18 +63,27 @@ const createProduct = async (req, res, next) => {
     let images = [];
     if (req.files && req.files.length > 0) {
       const uploadPromises = req.files.map((file) =>
-        uploadToCloudinary(file.buffer, 'lumiere/products')
+        uploadToCloudinary(file.buffer, 'lumiere/products', file.mimetype)
       );
       images = await Promise.all(uploadPromises);
     }
 
+    // If no images were uploaded, supply a high-quality default piece image
+    if (!images || images.length === 0) {
+      const defaultImg =
+        category === 'silver'
+          ? 'https://images.unsplash.com/photo-1611591475879-11c9118c7c97?auto=format&fit=crop&w=800&q=80'
+          : 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80';
+      images = [{ url: defaultImg, publicId: null }];
+    }
+
     const product = new Product({
-      name,
-      category,
-      price,
-      weight,
-      purity,
-      description,
+      name: name ? name.trim() : 'Jewellery Item',
+      category: category || 'gold',
+      price: Number(price) || 0,
+      weight: weight && weight.trim() ? weight.trim() : 'Standard',
+      purity: purity && purity.trim() ? purity.trim() : (category === 'silver' ? '925 Silver' : '22K Gold'),
+      description: description && description.trim() ? description.trim() : `${name || 'Jewellery piece'} - Handcrafted with precision.`,
       inStock: inStock === 'false' ? false : true,
       images,
     });
@@ -118,7 +127,7 @@ const updateProduct = async (req, res, next) => {
       }
 
       const uploadPromises = req.files.map((file) =>
-        uploadToCloudinary(file.buffer, 'lumiere/products')
+        uploadToCloudinary(file.buffer, 'lumiere/products', file.mimetype)
       );
       const newImages = await Promise.all(uploadPromises);
       product.images = newImages;
@@ -225,7 +234,7 @@ const replaceProductImage = async (req, res, next) => {
     }
 
     // Upload new image
-    const uploaded = await uploadToCloudinary(req.file.buffer, 'lumiere/products');
+    const uploaded = await uploadToCloudinary(req.file.buffer, 'lumiere/products', req.file.mimetype);
 
     // Delete old cloud image if present
     const old = product.images[imgIndex];

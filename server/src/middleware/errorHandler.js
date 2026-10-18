@@ -14,7 +14,7 @@ const errorHandler = (err, req, res, next) => {
     return res.status(409).json({ success: false, message: 'Duplicate field value entered' });
   }
 
-  return res.status(500).json({ success: false, message: 'Server Error' });
+  return res.status(500).json({ success: false, message: err.message || 'Server Error' });
 };
 
 module.exports = errorHandler;

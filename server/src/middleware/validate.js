@@ -8,9 +8,9 @@ const validateProduct = [
   check('price')
     .isFloat({ min: 0 })
     .withMessage('Price must be a positive number'),
-  check('weight').notEmpty().withMessage('Weight is required'),
-  check('purity').notEmpty().withMessage('Purity is required'),
-  check('description').notEmpty().withMessage('Description is required'),
+  check('weight').optional({ checkFalsy: true }).trim(),
+  check('purity').optional({ checkFalsy: true }).trim(),
+  check('description').optional({ checkFalsy: true }).trim(),
 ];
 
 const validateEnquiry = [
@@ -25,7 +25,8 @@ const validateEnquiry = [
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
+    const errorMessages = errors.array().map((e) => e.msg).join(', ');
+    return res.status(400).json({ success: false, message: errorMessages, errors: errors.array() });
   }
   next();
 };

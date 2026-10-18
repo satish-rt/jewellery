@@ -65,20 +65,23 @@ const Products = () => {
         }
       }
 
-      const config = { headers: { "Content-Type": "multipart/form-data" } };
-
       if (editingProduct) {
-        await api.put(`/products/${editingProduct._id}`, formData, config);
+        await api.put(`/products/${editingProduct._id}`, formData);
         toast.success("Product updated successfully");
       } else {
-        await api.post("/products", formData, config);
+        await api.post("/products", formData);
         toast.success("Product created successfully");
       }
 
       closeModal();
       fetchProducts();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Operation failed");
+      const msg =
+        error.response?.data?.message ||
+        (Array.isArray(error.response?.data?.errors)
+          ? error.response.data.errors.map((e) => e.msg).join(", ")
+          : "Operation failed");
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -381,7 +384,7 @@ const Products = () => {
                                 const formData = new FormData();
                                 formData.append('image', file);
                                 try {
-                                  await api.patch(`/products/${editingProduct._id}/images/${img._id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+                                  await api.patch(`/products/${editingProduct._id}/images/${img._id}`, formData);
                                   toast.success('Image replaced');
                                   const { data } = await api.get('/products');
                                   const refreshed = data.products.find(p => p._id === editingProduct._id);

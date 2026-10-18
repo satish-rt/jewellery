@@ -18,10 +18,7 @@ const productSchema = new mongoose.Schema({
         publicId: String,
       },
     ],
-    validate: [
-      (val) => val.length >= 1,
-      '{PATH} requires at least one image',
-    ],
+    default: [],
   },
   price: {
     type: Number,
@@ -30,15 +27,15 @@ const productSchema = new mongoose.Schema({
   },
   weight: {
     type: String,
-    required: true,
+    default: 'Standard',
   },
   purity: {
     type: String,
-    required: true,
+    default: 'Standard',
   },
   description: {
     type: String,
-    required: true,
+    default: '',
   },
   inStock: {
     type: Boolean,
