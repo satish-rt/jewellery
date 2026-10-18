@@ -6,8 +6,8 @@ const connectDB = require('../src/config/db');
 const seedAdmin = async () => {
   try {
     await connectDB();
-    const adminEmail = process.env.ADMIN_EMAIL;
-    const adminPassword = process.env.ADMIN_PASSWORD;
+    const adminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+    const adminPassword = (process.env.ADMIN_PASSWORD || '').trim();
 
     if (!adminEmail || !adminPassword) {
       console.error('Please set ADMIN_EMAIL and ADMIN_PASSWORD in .env');

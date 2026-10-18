@@ -19,15 +19,23 @@ const Register = () => {
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (form.password !== form.confirm) { setError('Passwords do not match.'); return; }
-    if (form.password.length < 6) { setError('Password must be at least 6 characters.'); return; }
+    const cleanEmail = form.email.trim().toLowerCase();
+    const cleanPassword = form.password.trim();
+    const cleanConfirm = form.confirm.trim();
+    const cleanName = form.name.trim();
+    const cleanPhone = form.phone.trim();
+
+    if (cleanPassword !== cleanConfirm) { setError('Passwords do not match.'); return; }
+    if (cleanPassword.length < 6) { setError('Password must be at least 6 characters.'); return; }
     setLoading(true);
     try {
-      await api.post('/users/register', { name: form.name, email: form.email, phone: form.phone, password: form.password });
-      navigate('/login', { state: { message: 'Account created! Please login to continue.' } });
+      await api.post('/users/register', { name: cleanName, email: cleanEmail, phone: cleanPhone, password: cleanPassword });
+      navigate('/login', { state: { message: 'Account created successfully! Please login to continue.' } });
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
@@ -62,54 +70,97 @@ const Register = () => {
       </div>
 
       {/* Right form panel */}
-      <div className="flex-1 flex items-center justify-center px-8 py-12">
+      <div className="flex-1 flex items-center justify-center px-5 sm:px-8 py-10 sm:py-12">
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}
           className="w-full max-w-md">
 
-          <div className="mb-10">
-            <Logo size="md" linkTo={null} />
-            <div className="mt-8 mb-1">
-              <h1 className="font-serif text-3xl text-cream">Create Account</h1>
+          <div className="mb-6 sm:mb-8 text-center sm:text-left">
+            <div className="flex justify-center sm:justify-start">
+              <Logo size="md" linkTo="/" />
             </div>
-            <p className="text-gray-500 text-sm">Join our community to explore our collection</p>
+            <div className="mt-6 sm:mt-8 mb-1">
+              <h1 className="font-serif text-2xl sm:text-3xl text-cream">Create Account</h1>
+            </div>
+            <p className="text-gray-500 text-xs sm:text-sm">Join Rajlaxmi Jewellers to enquire and connect</p>
           </div>
 
           {error && (
-            <div className="mb-5 px-4 py-3 bg-red-950/30 border border-red-800/40 text-red-400 text-sm">
+            <div className="mb-5 px-4 py-3 bg-red-950/30 border border-red-800/40 text-red-400 text-xs sm:text-sm">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <label className="block text-xs uppercase tracking-widest text-gold/60 mb-2">Full Name *</label>
+              <label className="block text-xs uppercase tracking-widest text-gold/60 mb-1.5">Full Name *</label>
               <input type="text" value={form.name} onChange={set('name')} required placeholder="Your full name" className="input-gold" />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs uppercase tracking-widest text-gold/60 mb-2">Email *</label>
-                <input type="email" value={form.email} onChange={set('email')} required placeholder="your@email.com" className="input-gold" />
+                <label className="block text-xs uppercase tracking-widest text-gold/60 mb-1.5">Email *</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={set('email')}
+                  required
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
+                  placeholder="your@email.com"
+                  className="input-gold"
+                />
               </div>
               <div>
-                <label className="block text-xs uppercase tracking-widest text-gold/60 mb-2">Phone</label>
+                <label className="block text-xs uppercase tracking-widest text-gold/60 mb-1.5">Phone</label>
                 <input type="tel" value={form.phone} onChange={set('phone')} placeholder="+91 98765 43210" className="input-gold" />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs uppercase tracking-widest text-gold/60 mb-2">Password *</label>
-                <input type="password" value={form.password} onChange={set('password')} required placeholder="Min. 6 characters" className="input-gold" />
+                <label className="block text-xs uppercase tracking-widest text-gold/60 mb-1.5">Password *</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.password}
+                    onChange={set('password')}
+                    required
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck="false"
+                    placeholder="Min. 6 chars"
+                    className="input-gold pr-12"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gold text-xs transition-colors p-1"
+                  >
+                    {showPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
               </div>
               <div>
-                <label className="block text-xs uppercase tracking-widest text-gold/60 mb-2">Confirm *</label>
-                <input type="password" value={form.confirm} onChange={set('confirm')} required placeholder="Re-enter password" className="input-gold" />
+                <label className="block text-xs uppercase tracking-widest text-gold/60 mb-1.5">Confirm *</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.confirm}
+                    onChange={set('confirm')}
+                    required
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck="false"
+                    placeholder="Re-enter password"
+                    className="input-gold pr-12"
+                  />
+                </div>
               </div>
             </div>
 
             <button type="submit" disabled={loading}
-              className="mt-3 btn-gold-shimmer w-full py-4 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+              className="mt-2 btn-gold-shimmer w-full py-3.5 sm:py-4 text-sm disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px]">
               {loading ? 'Creating Account...' : 'Create Account →'}
             </button>
           </form>

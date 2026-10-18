@@ -17,8 +17,13 @@ export const UserProvider = ({ children }) => {
     const checkSession = async () => {
       try {
         const { data } = await api.get('/users/me');
-        if (data.success) setUser(data.user);
+        if (data.success) {
+          setUser(data.user);
+          localStorage.setItem('lumiereUser', JSON.stringify(data.user));
+        }
       } catch {
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('lumiereUser');
         setUser(null);
       } finally {
         setLoading(false);
@@ -28,13 +33,24 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const { data } = await api.post('/users/login', { email, password });
-    if (data.success) setUser(data.user);
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPassword = (password || '').trim();
+    const { data } = await api.post('/users/login', { email: cleanEmail, password: cleanPassword });
+    if (!data?.success || !data.user) {
+      throw new Error('The login service returned an invalid response.');
+    }
+    if (data.token) {
+      localStorage.setItem('userToken', data.token);
+    }
+    localStorage.setItem('lumiereUser', JSON.stringify(data.user));
+    setUser(data.user);
     return data;
   };
 
   const logout = async () => {
     try { await api.post('/users/logout'); } catch {}
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('lumiereUser');
     setUser(null);
   };
 

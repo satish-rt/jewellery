@@ -52,53 +52,53 @@ const Home = () => {
           style={{ background: 'linear-gradient(to top, #1A1A1A, transparent)' }} />
 
         {/* ── Hero Content — LEFT ALIGNED ── */}
-        <div className="relative z-20 w-full container mx-auto px-8 md:px-16 lg:px-20 pt-28 pb-16">
+        <div className="relative z-20 w-full container mx-auto px-5 sm:px-8 md:px-16 lg:px-20 pt-24 sm:pt-28 pb-12 sm:pb-16">
           <div className="max-w-2xl">
 
             {/* Eyebrow badge */}
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-              <div className="inline-flex items-center gap-2 mb-8">
-                <div className="h-px w-8 bg-gold" />
-                <span className="text-gold text-xs tracking-[0.3em] uppercase font-light">Premium Handcrafted Jewellery Since 1975</span>
-                <div className="h-px w-8 bg-gold" />
+              <div className="inline-flex items-center gap-2 mb-4 sm:mb-8">
+                <div className="h-px w-6 sm:w-8 bg-gold" />
+                <span className="text-gold text-[10px] sm:text-xs tracking-[0.25em] uppercase font-light">Fine Handcrafted Jewellery Since 1975</span>
+                <div className="h-px w-6 sm:w-8 bg-gold" />
               </div>
             </motion.div>
 
             {/* Main heading */}
             <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: 'easeOut', delay: 0.1 }}
-              className="font-serif text-6xl md:text-7xl lg:text-8xl text-cream leading-[1.0] mb-6">
+              className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-cream leading-[1.05] mb-4 sm:mb-6">
               Timeless<br />
-              <span className="italic text-gold-gradient">Gold.</span>
+              <span className="italic text-gold-gradient">Gold & Silver.</span>
             </motion.h1>
 
             {/* Subheading */}
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-gray-300 text-lg md:text-xl max-w-lg mb-10 font-light leading-relaxed">
+              className="text-gray-300 text-sm sm:text-lg md:text-xl max-w-lg mb-8 sm:mb-10 font-light leading-relaxed">
               Every piece at Rajlaxmi Jewellers is an heirloom in the making — 
-              hallmarked, handcrafted, and designed to be cherished forever.
+              100% BIS hallmarked, handcrafted, and open for everyone to explore.
             </motion.p>
 
             {/* CTA Buttons */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.5 }}
-              className="flex flex-col sm:flex-row gap-4">
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link to="/shop"
-                className="inline-flex items-center justify-center gap-3 bg-gold text-charcoal px-10 py-4 text-sm uppercase tracking-[0.2em] font-semibold hover:bg-gold-200 transition-all duration-300 group shadow-gold">
+                className="inline-flex items-center justify-center gap-3 bg-gold text-charcoal px-8 sm:px-10 py-3.5 sm:py-4 text-xs sm:text-sm uppercase tracking-[0.2em] font-semibold hover:bg-gold-200 transition-all duration-300 group shadow-gold">
                 Explore Collection
                 <span className="text-lg group-hover:translate-x-1 transition-transform">→</span>
               </Link>
               <Link to="/contact"
-                className="inline-flex items-center justify-center gap-3 border border-gold/50 text-cream px-10 py-4 text-sm uppercase tracking-[0.2em] hover:border-gold hover:text-gold transition-all duration-300">
-                Book Consultation
+                className="inline-flex items-center justify-center gap-3 border border-gold/50 text-cream px-8 sm:px-10 py-3.5 sm:py-4 text-xs sm:text-sm uppercase tracking-[0.2em] hover:border-gold hover:text-gold transition-all duration-300">
+                Contact Atelier
               </Link>
             </motion.div>
 
             {/* Trust signals */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
-              className="flex items-center gap-6 mt-12 pt-8 border-t border-gold/15">
-              {['BIS Hallmarked', 'Free Customisation', 'Trusted Since 1975'].map((t, i) => (
+              className="flex items-center flex-wrap gap-4 sm:gap-6 mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gold/15">
+              {['BIS Hallmarked', 'Direct Atelier Pricing', 'Trusted Since 1975'].map((t, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <span className="text-gold text-xs">✦</span>
-                  <span className="text-gray-500 text-xs uppercase tracking-widest">{t}</span>
+                  <span className="text-gray-400 text-[11px] sm:text-xs uppercase tracking-wider">{t}</span>
                 </div>
               ))}
             </motion.div>
@@ -106,17 +106,67 @@ const Home = () => {
         </div>
       </section>
 
+      {/* ─────────────────── GOLD & SILVER DIRECT ENTRY (MOBILE FIRST) ─────────────────── */}
+      <section className="py-6 sm:py-10 px-4 sm:px-8 bg-[#121212] border-b border-gold/15">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Gold Card */}
+            <Link
+              to="/shop?category=gold"
+              className="group relative overflow-hidden bg-gradient-to-br from-[#241A05] to-[#141414] border border-gold/30 hover:border-gold p-6 sm:p-8 transition-all duration-300 shadow-gold-sm hover:shadow-gold rounded-sm"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <span className="text-2xl text-gold">✦</span>
+                <span className="px-2.5 py-1 text-[9px] sm:text-[10px] uppercase tracking-widest text-gold bg-gold/10 border border-gold/30 font-semibold">
+                  22K Hallmarked
+                </span>
+              </div>
+              <h3 className="font-serif text-2xl sm:text-3xl text-cream group-hover:text-gold transition-colors mb-2">
+                Gold Collection
+              </h3>
+              <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-4">
+                Bridal sets, royal necklaces, bangles, earrings, and auspicious coins crafted in pure gold.
+              </p>
+              <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-gold font-semibold group-hover:translate-x-1 transition-transform">
+                Browse Gold Pieces →
+              </span>
+            </Link>
+
+            {/* Silver Card */}
+            <Link
+              to="/shop?category=silver"
+              className="group relative overflow-hidden bg-gradient-to-br from-[#1A1A1A] to-[#121212] border border-gray-700 hover:border-gold/60 p-6 sm:p-8 transition-all duration-300 shadow-sm hover:shadow-gold-sm rounded-sm"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <span className="text-2xl text-gray-300">◆</span>
+                <span className="px-2.5 py-1 text-[9px] sm:text-[10px] uppercase tracking-widest text-gray-200 bg-white/5 border border-gray-600 font-semibold">
+                  925 Sterling
+                </span>
+              </div>
+              <h3 className="font-serif text-2xl sm:text-3xl text-cream group-hover:text-gold transition-colors mb-2">
+                Silver Collection
+              </h3>
+              <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-4">
+                Sterling silver jewellery, payals, bracelets, chains, pooja articles, and gift sets.
+              </p>
+              <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-gray-300 group-hover:text-gold font-semibold group-hover:translate-x-1 transition-transform">
+                Browse Silver Pieces →
+              </span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ─────────────────── STATS BAR ─────────────────── */}
-      <div className="divider-gold" />
       <section style={{ background: 'linear-gradient(180deg, #1A1500 0%, #1A1A1A 100%)' }}>
-        <div className="container mx-auto px-8">
-          <div className="grid grid-cols-4 divide-x divide-gold/15">
+        <div className="container mx-auto px-4 sm:px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-gold/15">
             {stats.map((s, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }} viewport={{ once: true }}
-                className="py-10 text-center px-6">
-                <p className="font-serif text-4xl md:text-5xl text-gold-gradient font-semibold mb-2">{s.value}</p>
-                <p className="text-gray-500 text-xs uppercase tracking-widest whitespace-pre-line leading-relaxed">{s.label}</p>
+                className="py-6 sm:py-10 text-center px-3 sm:px-6">
+                <p className="font-serif text-3xl sm:text-4xl md:text-5xl text-gold-gradient font-semibold mb-1 sm:mb-2">{s.value}</p>
+                <p className="text-gray-400 text-[10px] sm:text-xs uppercase tracking-widest whitespace-pre-line leading-relaxed">{s.label}</p>
               </motion.div>
             ))}
           </div>
@@ -124,25 +174,61 @@ const Home = () => {
       </section>
       <div className="divider-gold" />
 
-      {/* ─────────────────── CATEGORIES ─────────────────── */}
-      <section className="py-20 px-8 bg-charcoal">
-        <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
+      {/* ─────────────────── FEATURED PRODUCTS (2 COLUMNS ON MOBILE) ─────────────────── */}
+      <section className="py-12 sm:py-20 px-4 sm:px-8" style={{ background: 'linear-gradient(180deg, #1A1500 0%, #1A1A1A 100%)' }}>
+        <div className="container mx-auto max-w-6xl">
+          {/* Section header */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8 sm:mb-12">
             <div>
-              <span className="text-gold text-xs uppercase tracking-[0.3em] mb-2 block">Browse by</span>
-              <h2 className="font-serif text-4xl text-cream">Our Categories</h2>
+              <span className="text-gold text-[10px] sm:text-xs uppercase tracking-[0.3em] mb-1.5 block">Handpicked for you</span>
+              <h2 className="font-serif text-2xl sm:text-4xl text-cream">Featured Pieces</h2>
             </div>
-            <Link to="/shop" className="text-gold text-xs uppercase tracking-widest hover:text-gold-200 transition-colors border-b border-gold/30 pb-1 self-start md:self-auto">
+            <Link to="/shop" className="text-gold text-xs uppercase tracking-widest hover:text-gold-200 transition-colors border-b border-gold/30 pb-0.5 self-start sm:self-auto">
+              View All Collection →
+            </Link>
+          </div>
+
+          {featured.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+              {featured.map((product, i) => (
+                <motion.div key={product._id}
+                  initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }} viewport={{ once: true }}
+                  className="card-gold-hover">
+                  <ProductCard product={product} />
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="aspect-square bg-[#141414] animate-pulse border border-gold/10" />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ─────────────────── CATEGORIES ─────────────────── */}
+      <div className="divider-gold" />
+      <section className="py-12 sm:py-20 px-4 sm:px-8 bg-charcoal">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8 sm:mb-12">
+            <div>
+              <span className="text-gold text-[10px] sm:text-xs uppercase tracking-[0.3em] mb-1.5 block">Browse by</span>
+              <h2 className="font-serif text-2xl sm:text-4xl text-cream">Our Categories</h2>
+            </div>
+            <Link to="/shop" className="text-gold text-xs uppercase tracking-widest hover:text-gold-200 transition-colors border-b border-gold/30 pb-0.5 self-start sm:self-auto">
               View All →
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {categories.map((cat, i) => (
               <motion.div key={i} whileHover={{ y: -4 }} transition={{ duration: 0.3 }}>
-                <Link to="/shop" className="block bg-[#141414] border border-gold/10 hover:border-gold/50 p-6 md:p-8 transition-all duration-400 group hover:shadow-gold">
-                  <div className="text-gold/30 text-3xl mb-4 group-hover:text-gold transition-colors">{cat.icon}</div>
-                  <h3 className="font-serif text-cream text-base md:text-lg mb-1 group-hover:text-gold transition-colors">{cat.name}</h3>
-                  <p className="text-gray-500 text-xs tracking-wide">{cat.desc}</p>
+                <Link to="/shop" className="block bg-[#141414] border border-gold/10 hover:border-gold/50 p-4 sm:p-7 transition-all duration-300 group hover:shadow-gold rounded-sm">
+                  <div className="text-gold/40 text-2xl sm:text-3xl mb-3 group-hover:text-gold transition-colors">{cat.icon}</div>
+                  <h3 className="font-serif text-cream text-sm sm:text-base mb-1 group-hover:text-gold transition-colors">{cat.name}</h3>
+                  <p className="text-gray-500 text-[11px] sm:text-xs tracking-wide">{cat.desc}</p>
                 </Link>
               </motion.div>
             ))}
@@ -150,65 +236,31 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ─────────────────── FEATURED PRODUCTS ─────────────────── */}
+      {/* ─────────────────── TESTIMONIALS ─────────────────── */}
       <div className="divider-gold" />
-      <section className="py-20 px-8 bg-charcoal">
+      <section className="py-12 sm:py-20 px-4 sm:px-8 bg-charcoal">
         <div className="container mx-auto max-w-6xl">
-          <div className="mb-12 text-center">
-            <span className="text-gold text-xs uppercase tracking-[0.3em] mb-3 block">Customer love</span>
-            <h2 className="font-serif text-4xl text-cream">Testimonials</h2>
+          <div className="mb-8 sm:mb-12 text-center">
+            <span className="text-gold text-[10px] sm:text-xs uppercase tracking-[0.3em] mb-2 block">Customer love</span>
+            <h2 className="font-serif text-2xl sm:text-4xl text-cream">Testimonials</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {[
               { name: 'Aditi S.', city: 'Mumbai', quote: 'The craftsmanship is exceptional and the staff handled our custom piece with so much patience.', rating: 5 },
               { name: 'Ritika M.', city: 'Delhi', quote: 'I found the perfect bridal set here. Every detail felt premium, elegant, and personal.', rating: 5 },
               { name: 'Mehul P.', city: 'Ahmedabad', quote: 'The hallmarked gold and finishing quality are exactly what we wanted for my family jewellery.', rating: 5 },
             ].map((item, index) => (
-              <motion.div key={index} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="border border-gold/15 bg-[#141414] p-6">
-                <div className="mb-4 text-gold text-sm">{'★'.repeat(item.rating)}</div>
-                <p className="text-gray-300 text-sm leading-relaxed mb-5">“{item.quote}”</p>
-                <div className="border-t border-gold/10 pt-4">
-                  <p className="font-serif text-cream text-lg">{item.name}</p>
-                  <p className="text-xs uppercase tracking-widest text-gold/70">{item.city}</p>
+              <motion.div key={index} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="border border-gold/15 bg-[#141414] p-5 sm:p-6 rounded-sm">
+                <div className="mb-3 text-gold text-xs sm:text-sm">{'★'.repeat(item.rating)}</div>
+                <p className="text-gray-300 text-xs sm:text-sm leading-relaxed mb-4">“{item.quote}”</p>
+                <div className="border-t border-gold/10 pt-3">
+                  <p className="font-serif text-cream text-base sm:text-lg">{item.name}</p>
+                  <p className="text-[10px] sm:text-xs uppercase tracking-widest text-gold/70">{item.city}</p>
                 </div>
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-      <div className="divider-gold" />
-      <section className="py-20 px-8" style={{ background: 'linear-gradient(180deg, #1A1500 0%, #1A1A1A 100%)' }}>
-        <div className="container mx-auto">
-          {/* Section header */}
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
-            <div>
-              <span className="text-gold text-xs uppercase tracking-[0.3em] mb-2 block">Handpicked for you</span>
-              <h2 className="font-serif text-4xl text-cream">Featured Pieces</h2>
-            </div>
-            <Link to="/shop" className="text-gold text-xs uppercase tracking-widest hover:text-gold-200 transition-colors border-b border-gold/30 pb-1 self-start md:self-auto">
-              Full Collection →
-            </Link>
-          </div>
-
-          {featured.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {featured.map((product, i) => (
-                <motion.div key={product._id}
-                  initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }} viewport={{ once: true }}
-                  className="card-gold-hover">
-                  <ProductCard product={product} />
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="aspect-square bg-[#141414] animate-pulse border border-gold/5" />
-              ))}
-            </div>
-          )}
         </div>
       </section>
 

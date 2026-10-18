@@ -13,20 +13,33 @@ const Dashboard = () => {
     document.title = "Dashboard | Rajlaxmi Admin";
     const fetchStats = async () => {
       try {
-        const [productsRes, enquiriesRes, usersRes] = await Promise.all([
+        const [productsRes, enquiriesRes, usersRes] = await Promise.allSettled([
           api.get("/products"),
           api.get("/enquiries"),
           api.get("/users"),
         ]);
-        const products = productsRes.data.products || [];
-        const enquiries = enquiriesRes.data.enquiries || [];
-        const users = usersRes.data.users || [];
+        const products =
+          productsRes.status === "fulfilled"
+            ? productsRes.value.data?.products || []
+            : [];
+        const enquiries =
+          enquiriesRes.status === "fulfilled"
+            ? enquiriesRes.value.data?.enquiries || []
+            : [];
+        const users =
+          usersRes.status === "fulfilled"
+            ? usersRes.value.data?.users || []
+            : [];
         setStats({
           totalProducts: products.length,
-          goldProducts: products.filter(p => p.category?.toLowerCase() === "gold").length,
-          silverProducts: products.filter(p => p.category?.toLowerCase() === "silver").length,
+          goldProducts: products.filter(
+            (p) => p.category?.toLowerCase() === "gold",
+          ).length,
+          silverProducts: products.filter(
+            (p) => p.category?.toLowerCase() === "silver",
+          ).length,
           totalEnquiries: enquiries.length,
-          newEnquiries: enquiries.filter(e => e.status === "new").length,
+          newEnquiries: enquiries.filter((e) => e.status === "new").length,
           totalUsers: users.length,
         });
       } catch (e) {

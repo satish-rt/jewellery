@@ -161,10 +161,19 @@ const Products = () => {
                     <img
                       src={
                         product.images?.[0]?.url ||
-                        "https://via.placeholder.com/50"
+                        (product.category === "silver"
+                          ? "https://images.unsplash.com/photo-1611591475879-11c9118c7c97?auto=format&fit=crop&w=150&q=80"
+                          : "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=150&q=80")
                       }
                       alt={product.name}
-                      className="w-12 h-12 object-cover border border-gray-800"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src =
+                          product.category === "silver"
+                            ? "https://images.unsplash.com/photo-1611591475879-11c9118c7c97?auto=format&fit=crop&w=150&q=80"
+                            : "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=150&q=80";
+                      }}
+                      className="w-12 h-12 object-cover border border-gray-800 rounded-sm"
                     />
                   </td>
                   <td className="p-4 font-serif text-cream text-lg">

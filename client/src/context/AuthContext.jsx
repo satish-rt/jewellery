@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
         const { data } = await api.get('/auth/me');
         setAdmin(data.admin);
       } catch (error) {
+        localStorage.removeItem('adminToken');
         setAdmin(null);
       } finally {
         setLoading(false);
@@ -24,13 +25,24 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const { data } = await api.post('/auth/login', { email, password });
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPassword = (password || '').trim();
+    const { data } = await api.post('/auth/login', { email: cleanEmail, password: cleanPassword });
+    if (!data?.success || !data.admin) {
+      throw new Error('The login service returned an invalid response.');
+    }
+    if (data.token) {
+      localStorage.setItem('adminToken', data.token);
+    }
     setAdmin(data.admin);
     return data;
   };
 
   const logout = async () => {
-    await api.post('/auth/logout');
+    try {
+      await api.post('/auth/logout');
+    } catch {}
+    localStorage.removeItem('adminToken');
     setAdmin(null);
   };
 

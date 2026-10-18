@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import api from '../lib/api';
@@ -7,10 +7,13 @@ import { PageLoader } from '../components/Loader';
 import ContactModal from '../components/ContactModal';
 import ProductCard from '../components/ProductCard';
 import { buildWhatsAppUrl } from '../components/WhatsAppButton';
+import { useUser } from '../context/UserContext';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useUser();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -95,8 +98,17 @@ const ProductDetail = () => {
                   key={activeImage}
                   src={images[activeImage]}
                   alt={`${product.name} — Rajlaxmi Jewellers`}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src =
+                      product.category === "silver"
+                        ? "https://images.unsplash.com/photo-1611591475879-11c9118c7c97?auto=format&fit=crop&w=1000&q=80"
+                        : "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1000&q=80";
+                  }}
                   className="w-full h-full object-cover"
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.4 }}
                 />
               </AnimatePresence>
@@ -162,13 +174,27 @@ const ProductDetail = () => {
 
             {/* CTA Buttons */}
             <div className="reveal-el opacity-0 flex flex-col sm:flex-row gap-3 mt-2">
-              <button onClick={() => setModalOpen(true)}
-                className="flex-1 btn-gold-shimmer py-4 text-sm text-center">
+              <button
+                onClick={() => setModalOpen(true)}
+                className="flex-1 btn-gold-shimmer py-3.5 sm:py-4 text-xs sm:text-sm text-center min-h-[46px]"
+              >
                 Enquire About This Piece
               </button>
               <button
-                onClick={() => navigate(`/contact?productId=${product._id}&productName=${encodeURIComponent(product.name)}`)}
-                className="flex-1 border border-gold/50 text-gold py-4 text-sm uppercase tracking-widest hover:bg-gold hover:text-charcoal transition-all duration-300 text-center">
+                onClick={() => {
+                  if (!user) {
+                    navigate('/login', {
+                      state: {
+                        from: { pathname: `/contact?productId=${product._id}&productName=${encodeURIComponent(product.name)}` },
+                        message: `Please login to contact us regarding "${product.name}".`,
+                      },
+                    });
+                  } else {
+                    navigate(`/contact?productId=${product._id}&productName=${encodeURIComponent(product.name)}`);
+                  }
+                }}
+                className="flex-1 border border-gold/50 text-gold py-3.5 sm:py-4 text-xs sm:text-sm uppercase tracking-widest hover:bg-gold hover:text-charcoal transition-all duration-300 text-center min-h-[46px]"
+              >
                 Open Contact Form
               </button>
             </div>
@@ -178,9 +204,10 @@ const ProductDetail = () => {
                 href={buildWhatsAppUrl(product.name)}
                 target="_blank"
                 rel="noreferrer"
-                className="flex-1 border border-[#25D366]/60 bg-[#25D366]/10 px-4 py-3 text-center text-sm font-medium uppercase tracking-[0.2em] text-[#a7f3c7] hover:bg-[#25D366]/20 transition-all duration-300"
+                className="flex-1 border border-[#25D366]/60 bg-[#25D366]/10 px-4 py-3 text-center text-xs sm:text-sm font-medium uppercase tracking-[0.2em] text-[#a7f3c7] hover:bg-[#25D366]/20 transition-all duration-300 flex items-center justify-center gap-2 min-h-[44px]"
               >
-                WhatsApp Enquiry
+                <span>✆</span>
+                <span>WhatsApp Enquiry</span>
               </a>
               <button
                 type="button"
@@ -188,7 +215,7 @@ const ProductDetail = () => {
                   await navigator.clipboard.writeText(`${window.location.origin}/shop/${product._id}`);
                   window.alert('Product link copied to clipboard.');
                 }}
-                className="flex-1 border border-gold/50 text-gold py-3 text-sm uppercase tracking-[0.2em] hover:bg-gold hover:text-charcoal transition-all duration-300"
+                className="flex-1 border border-gold/50 text-gold py-3 text-xs sm:text-sm uppercase tracking-[0.2em] hover:bg-gold hover:text-charcoal transition-all duration-300 min-h-[44px]"
               >
                 Share This Piece
               </button>
@@ -201,17 +228,17 @@ const ProductDetail = () => {
         </div>
 
         {relatedProducts.length > 0 && (
-          <div className="mt-20 reveal-el opacity-0">
-            <div className="mb-8 flex items-end justify-between gap-4">
+          <div className="mt-16 sm:mt-20 reveal-el opacity-0">
+            <div className="mb-6 sm:mb-8 flex items-end justify-between gap-4">
               <div>
-                <span className="text-gold text-xs uppercase tracking-[0.3em] mb-2 block">You may also like</span>
-                <h2 className="font-serif text-3xl text-cream">Similar Pieces</h2>
+                <span className="text-gold text-[10px] sm:text-xs uppercase tracking-[0.3em] mb-1.5 block">You may also like</span>
+                <h2 className="font-serif text-2xl sm:text-3xl text-cream">Similar Pieces</h2>
               </div>
-              <Link to="/shop" className="text-gold text-xs uppercase tracking-widest hover:text-gold-200 transition-colors border-b border-gold/30 pb-1">
+              <Link to="/shop" className="text-gold text-xs uppercase tracking-widest hover:text-gold-200 transition-colors border-b border-gold/30 pb-0.5">
                 View All →
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
               {relatedProducts.map((item) => (
                 <div key={item._id} className="card-gold-hover">
                   <ProductCard product={item} />
@@ -220,6 +247,28 @@ const ProductDetail = () => {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Sticky Bottom Action Bar for Mobile Viewport */}
+      <div className="md:hidden fixed bottom-14 left-0 right-0 z-30 bg-[#121212]/95 backdrop-blur-md border-t border-gold/20 p-2.5 px-4 flex items-center justify-between gap-3 shadow-[0_-5px_25px_rgba(0,0,0,0.8)]">
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="text-[10px] uppercase tracking-wider text-gold/70 truncate">{product.category}</span>
+          <span className="text-sm font-serif text-gold font-semibold">{formatINR(product.price)}</span>
+        </div>
+        <a
+          href={buildWhatsAppUrl(product.name)}
+          target="_blank"
+          rel="noreferrer"
+          className="bg-[#25D366] text-charcoal font-semibold text-[11px] uppercase tracking-wider px-3 py-2.5 rounded-sm flex items-center gap-1.5 active:scale-95 transition-transform"
+        >
+          <span>✆ WhatsApp</span>
+        </a>
+        <button
+          onClick={() => setModalOpen(true)}
+          className="btn-gold-shimmer text-[11px] uppercase tracking-wider px-3.5 py-2.5 rounded-sm font-semibold active:scale-95 transition-transform"
+        >
+          Enquire
+        </button>
       </div>
 
       {modalOpen && (

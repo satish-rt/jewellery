@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductCard from "../components/ProductCard";
 import api from "../lib/api";
@@ -11,12 +12,22 @@ const priceRanges = [
 ];
 
 const Shop = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialCategory = searchParams.get("category") || "all";
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState(initialCategory);
   const [search, setSearch] = useState("");
   const [budget, setBudget] = useState("all");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const cat = searchParams.get("category");
+    if (cat && ["gold", "silver", "all"].includes(cat.toLowerCase())) {
+      setFilter(cat.toLowerCase());
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     document.title = "Collection | Rajlaxmi Jewellers";
@@ -42,9 +53,9 @@ const Shop = () => {
   }, [filter, search, budget]);
 
   const tabs = [
-    { key: "all", label: "All Pieces" },
-    { key: "gold", label: "✦ Gold" },
-    { key: "silver", label: "◆ Silver" },
+    { key: "all", label: "All Pieces", countLabel: "All" },
+    { key: "gold", label: "✦ 22K Gold", countLabel: "Gold" },
+    { key: "silver", label: "◆ 925 Silver", countLabel: "Silver" },
   ];
 
   const visibleProducts = useMemo(() => {
@@ -53,41 +64,81 @@ const Shop = () => {
     return products.filter((product) => String(product.name || "").toLowerCase().includes(query));
   }, [products, search]);
 
+  const handleTabChange = (key) => {
+    setFilter(key);
+    if (key === "all") {
+      searchParams.delete("category");
+    } else {
+      searchParams.set("category", key);
+    }
+    setSearchParams(searchParams);
+  };
+
   return (
     <div className="min-h-screen bg-charcoal">
-      <section className="bg-section-gold-tint pt-28 pb-16 text-center px-6 border-b border-gold/15">
-        <span className="badge-gold mb-4 inline-flex">Rajlaxmi Collection</span>
-        <h1 className="font-serif text-5xl md:text-6xl text-cream mb-4 heading-decorated">
+      <section className="bg-section-gold-tint pt-24 pb-10 sm:pt-28 sm:pb-16 text-center px-4 sm:px-6 border-b border-gold/15">
+        <span className="badge-gold mb-3 sm:mb-4 inline-flex">Rajlaxmi Collection</span>
+        <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl text-cream mb-2 sm:mb-4 heading-decorated">
           Our Jewellery
         </h1>
-        <p className="text-gray-400 max-w-md mx-auto text-sm leading-relaxed mt-6">
-          Browse our complete collection of handcrafted gold and silver jewellery.
+        <p className="text-gray-400 max-w-md mx-auto text-xs sm:text-sm leading-relaxed mt-4 sm:mt-6 px-2">
+          Browse our complete handcrafted collection of 100% BIS hallmarked gold and sterling silver jewellery.
         </p>
       </section>
 
-      <section className="py-16 px-6 bg-charcoal">
-        <div className="container mx-auto">
-          <div className="mb-8 flex flex-col gap-4">
+      <section className="py-8 sm:py-16 px-3 sm:px-6 bg-charcoal">
+        <div className="container mx-auto max-w-7xl">
+          {/* Search and Filters */}
+          <div className="mb-6 sm:mb-10 flex flex-col gap-4">
             <div className="mx-auto w-full max-w-xl">
-              <label className="mb-2 block text-[10px] uppercase tracking-[0.25em] text-gold/70">Search by Piece</label>
-              <input
-                type="text"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search necklaces, rings, bangles..."
-                className="w-full border border-gold/20 bg-[#141414] px-4 py-3 text-sm text-cream placeholder:text-gray-500 focus:border-gold focus:outline-none"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search gold necklaces, silver rings, bangles..."
+                  className="w-full border border-gold/25 bg-[#141414] pl-10 pr-10 py-3 text-xs sm:text-sm text-cream placeholder:text-gray-500 focus:border-gold focus:outline-none rounded-sm transition-colors"
+                />
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gold/60 text-sm">🔍</span>
+                {search && (
+                  <button
+                    onClick={() => setSearch("")}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-cream text-xs p-1"
+                    aria-label="Clear search"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
             </div>
 
-            <div className="flex justify-center gap-2 flex-wrap">
+            {/* Gold & Silver Category Selection Pills */}
+            <div className="flex justify-center items-center gap-2 overflow-x-auto py-1 px-1 no-scrollbar">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => handleTabChange(tab.key)}
+                  className={`px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-xs uppercase tracking-widest transition-all duration-300 rounded-sm whitespace-nowrap active:scale-95 ${
+                    filter === tab.key
+                      ? "bg-gold text-charcoal shadow-gold font-bold"
+                      : "border border-gold/30 text-gray-300 hover:border-gold hover:text-gold bg-[#141414]"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Budget Range Pills */}
+            <div className="flex justify-center items-center gap-1.5 sm:gap-2 overflow-x-auto py-1 px-1 no-scrollbar">
               {priceRanges.map((range) => (
                 <button
                   key={range.key}
                   onClick={() => setBudget(range.key)}
-                  className={`px-4 py-2 text-[10px] uppercase tracking-[0.2em] transition-all duration-300 ${
+                  className={`px-3 sm:px-4 py-1.5 text-[10px] uppercase tracking-wider transition-all duration-300 rounded-sm whitespace-nowrap active:scale-95 ${
                     budget === range.key
-                      ? "bg-gold text-charcoal shadow-gold font-semibold"
-                      : "border border-gold/30 text-gray-400 hover:border-gold hover:text-gold bg-transparent"
+                      ? "bg-gold/20 border border-gold text-gold font-semibold shadow-gold-sm"
+                      : "border border-gray-800 text-gray-400 hover:border-gold/40 hover:text-gray-200 bg-[#121212]"
                   }`}
                 >
                   {range.label}
@@ -96,34 +147,26 @@ const Shop = () => {
             </div>
           </div>
 
-          <div className="flex justify-center gap-2 mb-14 flex-wrap">
-            {tabs.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setFilter(tab.key)}
-                className={`px-6 py-2.5 text-xs uppercase tracking-widest transition-all duration-300 ${
-                  filter === tab.key
-                    ? "bg-gold text-charcoal shadow-gold font-semibold"
-                    : "border border-gold/30 text-gray-400 hover:border-gold hover:text-gold bg-transparent"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
+          {/* Products Grid - 2 COLUMNS ON MOBILE */}
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="aspect-square bg-[#1E1E1E] animate-pulse rounded-sm border border-gold/5" />
+                <div key={i} className="aspect-square bg-[#141414] animate-pulse rounded-sm border border-gold/10" />
               ))}
             </div>
           ) : error ? (
-            <div className="text-center py-20 text-red-400">{error}</div>
+            <div className="text-center py-16 text-red-400 text-sm">{error}</div>
           ) : visibleProducts.length === 0 ? (
-            <div className="text-center py-24">
-              <p className="font-serif text-4xl text-gray-600 mb-3">No pieces found</p>
-              <p className="text-gray-500 text-sm">Try another keyword or budget range.</p>
+            <div className="text-center py-20 px-4">
+              <span className="text-gold/40 text-4xl block mb-3">◈</span>
+              <p className="font-serif text-2xl sm:text-3xl text-gray-300 mb-2">No pieces found</p>
+              <p className="text-gray-500 text-xs sm:text-sm mb-6">Try clearing your search keyword or selecting "All Budgets".</p>
+              <button
+                onClick={() => { setSearch(""); setFilter("all"); setBudget("all"); }}
+                className="btn-gold-shimmer py-2.5 px-6 text-xs uppercase tracking-widest"
+              >
+                Reset Filters
+              </button>
             </div>
           ) : (
             <AnimatePresence mode="wait">
@@ -132,7 +175,7 @@ const Shop = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6"
               >
                 {visibleProducts.map((product) => (
                   <div key={product._id} className="card-gold-hover">
@@ -144,8 +187,8 @@ const Shop = () => {
           )}
 
           {!loading && visibleProducts.length > 0 && (
-            <p className="text-center text-gray-600 text-xs mt-10 uppercase tracking-widest">
-              Showing {visibleProducts.length} {filter === "all" ? "pieces" : filter + " pieces"}
+            <p className="text-center text-gray-500 text-[11px] sm:text-xs mt-10 uppercase tracking-widest">
+              Showing {visibleProducts.length} {filter === "all" ? "pieces" : filter + " jewellery pieces"}
             </p>
           )}
         </div>

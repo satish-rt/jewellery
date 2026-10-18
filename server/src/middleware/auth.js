@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
-  const token = req.cookies.token;
+  const authHeader = req.headers.authorization;
+  const bearerToken = authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  const token = req.cookies.token || bearerToken;
 
   if (!token) {
     return res.status(401).json({ success: false, message: 'Unauthorized' });

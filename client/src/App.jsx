@@ -17,6 +17,7 @@ import About from './pages/About';
 import UserLogin from './pages/UserLogin';
 import Register from './pages/Register';
 import WhatsAppButton from './components/WhatsAppButton';
+import MobileBottomNav from './components/MobileBottomNav';
 
 import ProtectedRoute from './admin/ProtectedRoute';
 import AdminLayout from './admin/AdminLayout';
@@ -37,19 +38,28 @@ function App() {
   return (
     <UserProvider>
       {showNavFooter && <Navbar />}
-      <main className="flex-grow">
+      <main className={`flex-grow ${showNavFooter ? 'pb-20 md:pb-0' : ''}`}>
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             {/* Auth routes — no Navbar, no login required */}
             <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
             <Route path="/login" element={<PageTransition><UserLogin /></PageTransition>} />
 
-            {/* Protected catalog routes — must be logged in */}
-            <Route path="/" element={<UserProtectedRoute><PageTransition><Home /></PageTransition></UserProtectedRoute>} />
-            <Route path="/shop" element={<UserProtectedRoute><PageTransition><Shop /></PageTransition></UserProtectedRoute>} />
-            <Route path="/shop/:id" element={<UserProtectedRoute><PageTransition><ProductDetail /></PageTransition></UserProtectedRoute>} />
-            <Route path="/contact" element={<UserProtectedRoute><PageTransition><Contact /></PageTransition></UserProtectedRoute>} />
-            <Route path="/about" element={<UserProtectedRoute><PageTransition><About /></PageTransition></UserProtectedRoute>} />
+            {/* Public catalog routes — ANY visitor can see products & listings without login */}
+            <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+            <Route path="/shop" element={<PageTransition><Shop /></PageTransition>} />
+            <Route path="/shop/:id" element={<PageTransition><ProductDetail /></PageTransition>} />
+            <Route path="/about" element={<PageTransition><About /></PageTransition>} />
+
+            {/* Contact route — requires login before contacting or submitting enquiries */}
+            <Route
+              path="/contact"
+              element={
+                <UserProtectedRoute message="Please login to contact us or submit an enquiry.">
+                  <PageTransition><Contact /></PageTransition>
+                </UserProtectedRoute>
+              }
+            />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
@@ -65,6 +75,7 @@ function App() {
       </main>
       {showNavFooter && <Footer />}
       {showNavFooter && <WhatsAppButton />}
+      {showNavFooter && <MobileBottomNav />}
     </UserProvider>
   );
 }

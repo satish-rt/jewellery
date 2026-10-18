@@ -4,15 +4,23 @@ const jwt = require("jsonwebtoken");
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    const cleanEmail = (email || "").trim().toLowerCase();
+    const cleanPassword = (password || "").trim();
 
-    const admin = await Admin.findOne({ email });
+    if (!cleanEmail || !cleanPassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email and password are required" });
+    }
+
+    const admin = await Admin.findOne({ email: cleanEmail });
     if (!admin) {
       return res
         .status(401)
         .json({ success: false, message: "Invalid credentials" });
     }
 
-    const isMatch = await admin.comparePassword(password);
+    const isMatch = await admin.comparePassword(cleanPassword);
     if (!isMatch) {
       return res
         .status(401)
@@ -28,11 +36,11 @@ const login = async (req, res, next) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.status(200).json({ success: true, admin: { email: admin.email } });
+    res.status(200).json({ success: true, token, admin: { email: admin.email } });
   } catch (err) {
     next(err);
   }

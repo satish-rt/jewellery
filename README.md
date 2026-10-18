@@ -148,7 +148,7 @@ cd client && npm run build    # Output: client/dist/
 cd server && NODE_ENV=production npm start
 ```
 
-Set CLIENT_URL to your live domain. Use nginx to serve client/dist and proxy /api to Express.
+Set `CLIENT_URL` to your live frontend domain. The frontend also needs `VITE_API_URL` set to the backend origin (for example, `https://api.yourdomain.com`, without a trailing slash or `/api`) so login and other API requests reach Express. This is required for separate frontend/backend deployments such as Vercel; otherwise `/api` requests are sent to the frontend deployment. For a same-origin deployment, configure the web server to proxy `/api` to Express.
 
 ## Security Features
 

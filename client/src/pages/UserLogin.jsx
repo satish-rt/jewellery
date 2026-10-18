@@ -7,6 +7,7 @@ import { useUser } from '../context/UserContext';
 const UserLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { user, login } = useUser();
@@ -26,10 +27,16 @@ const UserLogin = () => {
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
+      await login(email.trim().toLowerCase(), password.trim());
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password. Please try again.');
+      if (err.response?.status === 401) {
+        setError('Invalid email or password. Please try again.');
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Unable to reach the login service. Check the API configuration and try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -62,43 +69,73 @@ const UserLogin = () => {
       </div>
 
       {/* Right form panel */}
-      <div className="flex-1 flex items-center justify-center px-8 py-12">
+      <div className="flex-1 flex items-center justify-center px-5 sm:px-8 py-12">
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}
           className="w-full max-w-sm">
 
-          <div className="mb-10">
-            <Logo size="md" linkTo={null} />
-            <div className="mt-8 mb-1">
-              <h1 className="font-serif text-3xl text-cream">Welcome Back</h1>
+          <div className="mb-8 sm:mb-10 text-center sm:text-left">
+            <div className="flex justify-center sm:justify-start">
+              <Logo size="md" linkTo="/" />
             </div>
-            <p className="text-gray-500 text-sm">Login to access our collection</p>
+            <div className="mt-6 sm:mt-8 mb-1">
+              <h1 className="font-serif text-2xl sm:text-3xl text-cream">Welcome Back</h1>
+            </div>
+            <p className="text-gray-500 text-xs sm:text-sm">Login to access member features and enquire</p>
           </div>
 
           {successMsg && (
-            <div className="mb-5 px-4 py-3 bg-gold/8 border border-gold/30 text-gold text-sm">
+            <div className="mb-5 px-4 py-3 bg-gold/10 border border-gold/30 text-gold text-xs sm:text-sm">
               {successMsg}
             </div>
           )}
           {error && (
-            <div className="mb-5 px-4 py-3 bg-red-950/30 border border-red-800/40 text-red-400 text-sm">
+            <div className="mb-5 px-4 py-3 bg-red-950/30 border border-red-800/40 text-red-400 text-xs sm:text-sm">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:gap-5">
             <div>
               <label className="block text-xs uppercase tracking-widest text-gold/60 mb-2">Email Address</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
-                placeholder="your@email.com" className="input-gold" />
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck="false"
+                placeholder="your@email.com"
+                className="input-gold"
+              />
             </div>
             <div>
               <label className="block text-xs uppercase tracking-widest text-gold/60 mb-2">Password</label>
-              <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
-                placeholder="Your password" className="input-gold" />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck="false"
+                  placeholder="Your password"
+                  className="input-gold pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gold text-xs transition-colors p-1"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
             </div>
 
             <button type="submit" disabled={loading}
-              className="mt-2 btn-gold-shimmer w-full py-4 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+              className="mt-2 btn-gold-shimmer w-full py-3.5 sm:py-4 text-sm disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px]">
               {loading ? 'Logging in...' : 'Login to Account →'}
             </button>
           </form>
